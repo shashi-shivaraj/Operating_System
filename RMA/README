@@ -1,0 +1,4 @@
+This project contains code to perform Rate Monotonic Analysis (RMA) and 
+determine if the given system design is schedulable.
+
+Please refer the document Real time scheduling using RMA.pdf for details.
