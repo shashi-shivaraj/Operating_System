@@ -7,6 +7,6 @@ int stdout = 1;
 int main(int argc,char *argv[])
 {
 	printf(stdout, "[testgetprocsinfo() invoked]\n");
-	printf(stdout,"%d\n",getprocsinfo());
+	printf(stdout,"%d\n",getprocsinfo(argc));
 	exit();
 }
