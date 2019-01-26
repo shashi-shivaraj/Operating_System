@@ -7,6 +7,8 @@
 #include "mmu.h"
 #include "proc.h"
 
+#include "procsinfo.h" /*required for sys_getprocsinfo*/
+
 int
 sys_fork(void)
 {
@@ -92,10 +94,11 @@ sys_uptime(void)
 
 int sys_getprocsinfo(void)
 {
-	int n;
 	
-	if(argint(0, &n) < 0)
-    return -1;
-    
-	return n;
+	struct ProcsInfo *procsinfo = 0;
+	
+	if(argptr(0, (void*)&procsinfo, NPROC*sizeof(struct ProcsInfo)) < 0)
+		return -1;
+		
+	return getprocsinfo(procsinfo);
 }
