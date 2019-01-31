@@ -541,17 +541,13 @@ int getprocsinfo(struct ProcsInfo *procsinfo)
 	struct proc *p;
 	struct ProcsInfo *procs = procsinfo;
 	int proc_count = 0;
-	
+
 	acquire(&ptable.lock);
 	
 	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
 	{
 		/*get the info about all the process except the unused process*/
-		if(UNUSED == p->state)
-		{
-			continue;
-		}
-		else
+		if(UNUSED != p->state)
 		{
 			if(procs)
 			{	
@@ -560,9 +556,13 @@ int getprocsinfo(struct ProcsInfo *procsinfo)
 				procs++;	
 				proc_count++;
 			}
+			else
+			{
+				proc_count = PROCSINFO_INVALID_ARG; /*input arg can accomodate NPROC number of process infos*/
+			}
 		}
 	}
 	release(&ptable.lock);
 	
-	return proc_count;
+	return proc_count; /*return number of processes in use*/
 }
