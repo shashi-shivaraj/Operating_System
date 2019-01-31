@@ -534,7 +534,6 @@ procdump(void)
   }
 }
 
-
 /*Function to get information of all the processes*/
 int getprocsinfo(struct ProcsInfo *procsinfo)
 {
