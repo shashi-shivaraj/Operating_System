@@ -3,3 +3,114 @@ email: shonnah@g.clemson.edu
 XID : C88650674
 
 Description :
+A)Implemented a system call for xv6 kernel called getprocsinfo(),which simply returns the PID value and
+process name for each of the processes that exists in the system at the time of the call.
+
+Build Instructions:
+Open a terminal and set the path to the project directory.
+Use the commands: $ make clean;
+				  $ make qemu;
+				  
+This will build the xv6 kernel and the executable "testgetprocsinfo" to 
+test the getprocsinfo() system call in qemu emulator with xv6.
+Execute "testgetprocsinfo" from the command line:
+$ testgetprocsinfo
+
+Implementation Details:
+
+B)getprocsinfo() system call:
+
+1)The function prototype of the syscall is :
+	
+	int getprocsinfo(struct procinfo*)
+	
+2)Added header file procsinfo.h:
+
+struct procinfo is a structure with two data members, an integer pid and a string pname
+and is defined in a header file "procsinfo.h".It also the error codes for the implemented 
+syscall int getprocsinfo(struct procinfo*).
+Additionally I have defined the macro PROCSINFO_H to avoid multiple inclusions.
+
+3)System Call Number for getprocsinfo():
+
+Added #define SYS_getprocsinfo 22 in the file syscall.h
+
+4)Updated syscall.c to map SYS_getprocsinfo with its impmentation:
+
+@line 106 with: extern int sys_getprocsinfo(void);
+@line 130 with:[SYS_getprocsinfo] sys_getprocsinfo,
+
+5)Updated sysproc.c with implementation of sys_getprocsinfo():
+
+@line 10 with: #include "procsinfo.h" /*required for sys_getprocsinfo*/
+@line 95 with:
+int sys_getprocsinfo(void)
+{
+	
+	struct ProcsInfo *procsinfo = 0;
+	
+	if(argptr(0, (void*)&procsinfo, NPROC*sizeof(struct ProcsInfo)) < 0)
+		return -1;
+		
+	return getprocsinfo(procsinfo);
+}
+
+sys_getprocsinfo checks for input argument and calls the system function
+getprocsinfo() and returns an int value.
+
+6)Updated proc.c with the system function getprocsinfo():
+
+@line 9 with:#include "procsinfo.h"
+@line 537 with:
+/*Function to get information of all the processes*/
+int getprocsinfo(struct ProcsInfo *procsinfo)
+{
+	struct proc *p;
+	struct ProcsInfo *procs = procsinfo;
+	int proc_count = 0;
+
+	acquire(&ptable.lock);
+	
+	for(p = ptable.proc; p < &ptable.proc[NPROC]; p++)
+	{
+		/*get the info about all the process except the unused process*/
+		if(UNUSED != p->state)
+		{
+			if(procs)
+			{	
+				procs->pid = p->pid;
+				safestrcpy(procs->pname,p->name,16);
+				procs++;	
+				proc_count++;
+			}
+			else
+			{
+				proc_count = PROCSINFO_INVALID_ARG; /*input arg can accomodate NPROC number of process infos*/
+			}
+		}
+	}
+	release(&ptable.lock);
+	
+	return proc_count; /*return number of processes in use*/
+}
+
+getprocsinfo() function updates the input argument with info about 
+all the in-use process in the system and returns the number of processes in-use
+or corresponding error code defined in "procsinfo.h".
+
+7)Updation for user interface:
+Updated the files "defs.h","user.h" and "usys.S" with function prototypes.
+
+8)Test executable "testgetprocsinfo"
+Implemented testgetprocsinfo.c which uses fork() to create child processes and 
+calls getprocsinfo() to test the functionality of the system call.
+Please refer the file for implementation details.
+
+9)Makefile
+Updated the makefile to add the system call implementation to the kernel 
+and build the test executable.
+
+Impact on existing kernel and kernel overhead:
+The above described implementation of the syscall is an minimilistic implementation 
+and does not affect any other operations of kernel.
+The modifications to the kernel source did not break the testcases within usertests.
