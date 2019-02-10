@@ -1,0 +1,39 @@
+Name: Shashi Shivaraju
+email: shonnah@g.clemson.edu
+XID : C88650674
+
+Description :
+Part A - Null-pointer Dereference:
+Implemented code to cause an exception when a program dereferences a null pointer.
+
+Build Instructions:
+Open a terminal and set the path to the project directory.
+Use the commands: $ make clean;
+				  $ make qemu;
+This will build the xv6 kernel and the executable "test_nullptr" to 
+test the null pointer dereference behaviour.
+Execute "test_nullptr" from the command line:
+$ test_nullptr
+
+Implementation details of Part A - Null-pointer Dereference:
+
+1)Makefile
+Updated the makefile to set the user programs entry point to 0x1000.
+@line 149
+$(LD) $(LDFLAGS) -N -e main -Ttext 0x1000 -o $@ $^ #set entry point of user programs to 0x1000 = PGSIZE = 4096
+@line 156
+$(LD) $(LDFLAGS) -N -e main -Ttext 0x1000 -o _forktest forktest.o ulib.o usys.o #set entry point of user programs to 0x1000 = PGSIZE = 4096
+
+2)Modify exec()function of exec.c to load the program by excluding PAGE0
+@line 41 
+// Load program into memory exclude the first page.
+sz = PGSIZE - 1;
+
+3)Modify copyuvm()function of exec.c to exclude the first page.
+@line 325
+//exclude first page 
+  for(i = PGSIZE; i < sz; i += PGSIZE)
+
+4)Added nullptr check to function argptr()
+@line 66
+if(size < 0 || (uint)i >= curproc->sz || (uint)i+size > curproc->sz || (uint)i == 0) //check added to protect nullptr dereference 

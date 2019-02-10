@@ -20,10 +20,14 @@ int stdout = 1;
 int main(int argc,char *argv[])
 {
 	int *ptr; /* null pointer */
+
+	//fork(); /*create a child process*/
 	
 	ptr = 0;
 	
 	printf(stdout,"value = %d\n",*ptr);
+
+	//wait();
 	
 	exit();
 }
