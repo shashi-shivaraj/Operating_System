@@ -181,6 +181,7 @@ UPROGS=\
 	_usertests\
 	_testgetprocs\
 	_test_nullptr\
+	_test_shmem\
 	_wc\
 	_zombie\
 	$(CL_UPROGS)\
@@ -253,7 +254,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c testgetprocs.c test_nullptr.c\
-	printf.c umalloc.c\
+	test_shmem.c printf.c umalloc.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 	$(CL_EXTRA)\

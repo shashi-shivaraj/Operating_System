@@ -102,3 +102,14 @@ int sys_getprocsinfo(void)
 		
 	return getprocsinfo(procsinfo);
 }
+
+int sys_shmem_access(void)
+{
+    return 27;
+}
+
+
+int sys_shmem_count(void)
+{
+    return 27;
+}
