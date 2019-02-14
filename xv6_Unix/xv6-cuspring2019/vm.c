@@ -10,6 +10,9 @@
 extern char data[];  // defined by kernel.ld
 pde_t *kpgdir;  // for use in scheduler()
 
+//global array to store info of each shared page memory
+struct shmeminfo ShmemInfo[SHARED_PAGE_NUM];
+
 // Set up CPU's kernel segment descriptors.
 // Run once on entry on each CPU.
 void
@@ -224,7 +227,7 @@ allocuvm(pde_t *pgdir, uint oldsz, uint newsz)
   char *mem;
   uint a;
 
-  if(newsz >= KERNBASE)
+  if(newsz >= KERNBASE - SHARED_PAGE_NUM * PGSIZE) /*Modified to prevent allocation from shared pages*/
     return 0;
   if(newsz < oldsz)
     return oldsz;
@@ -384,6 +387,28 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
     va = va0 + PGSIZE;
   }
   return 0;
+}
+
+/*Function to initialize shared memory pages.
+Returns -1 on error */
+int shmem_init()
+{
+  int i = 0;
+
+  /*allocate memory for the shared pages*/
+  for(i=0;i<SHARED_PAGE_NUM;i++)
+  {
+    if(!(ShmemInfo[i].shmem_vaddr = kalloc())) /*Allocate one 4096-byte page of physical memory*/
+    {
+        /*kalloc has failed*/
+        return -1;
+    }
+
+    memset(ShmemInfo[i].shmem_vaddr,0,PGSIZE); /*initialize the memory to 0*/
+    ShmemInfo[i].count = 0; /*initialize count to 0*/
+  }
+
+  return 0;  
 }
 
 //PAGEBREAK!
