@@ -24,7 +24,15 @@
 // Total number of shared memory pages
 #define SHARED_PAGE_NUM  4
 
+
+
 #ifndef __ASSEMBLER__
+
+struct shmeminfo{
+  uint count;  /*To track number of active processes using shared memory*/
+  void *shmem_vaddr; /*pointer to store shared memory page address*/  
+};
+
 // Segment Descriptor
 struct segdesc {
   uint lim_15_0 : 16;  // Low bits of segment limit
