@@ -135,5 +135,5 @@ int sys_shmem_count(void)
       return -1;
     }
 
-    return 0;
+    return shmem_count(shmem_pgnum);
 }

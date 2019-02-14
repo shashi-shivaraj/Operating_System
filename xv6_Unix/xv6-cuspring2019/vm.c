@@ -411,6 +411,21 @@ int shmem_init()
   return 0;  
 }
 
+
+/*Function to get the total number of processes 
+ which currently are sharing a page as shared memory
+ Returns -1 on error */
+int shmem_count(int page_number)
+{
+
+  if(0 <= page_number && page_number < SHARED_PAGE_NUM)
+  {
+      return ShmemInfo[page_number].count; 
+  }
+  
+  return -1;
+}
+
 //PAGEBREAK!
 // Blank page.
 //PAGEBREAK!
