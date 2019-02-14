@@ -21,6 +21,9 @@
 // cpu->gdt[NSEGS] holds the above segments.
 #define NSEGS     6
 
+// Total number of shared memory pages
+#define SHARED_PAGE_NUM  4
+
 #ifndef __ASSEMBLER__
 // Segment Descriptor
 struct segdesc {

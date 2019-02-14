@@ -105,11 +105,35 @@ int sys_getprocsinfo(void)
 
 int sys_shmem_access(void)
 {
-    return 27;
+    int shmem_pgnum = 0;
+
+    if(argint(0, &shmem_pgnum) < 0)
+      return -1;
+
+    /*cprintf("shmem_pgnum = %d\n",shmem_pgnum);*/
+
+    if(!(0 <= shmem_pgnum && shmem_pgnum < SHARED_PAGE_NUM)) //page number should be in the range [0,3]
+    {
+      return -1;
+    }
+    
+    return 0;
 }
 
 
 int sys_shmem_count(void)
 {
-    return 27;
+    int shmem_pgnum = 0;
+
+    if(argint(0, &shmem_pgnum) < 0)
+      return -1;
+
+    /*cprintf("shmem_pgnum = %d\n",shmem_pgnum);*/
+
+    if(!(0 <= shmem_pgnum && shmem_pgnum < SHARED_PAGE_NUM)) //page number should be in the range [0,3]
+    {
+      return -1;
+    }
+
+    return 0;
 }
