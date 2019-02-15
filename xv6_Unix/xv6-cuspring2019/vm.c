@@ -290,7 +290,7 @@ freevm(pde_t *pgdir)
 
   if(pgdir == 0)
     panic("freevm: no pgdir");
-  deallocuvm(pgdir, KERNBASE, 0);
+  deallocuvm(pgdir, KERNBASE - SHARED_PAGE_NUM * PGSIZE, 0); //modified to prevent freeing of shared memory
   for(i = 0; i < NPDENTRIES; i++){
     if(pgdir[i] & PTE_P){
       char * v = P2V(PTE_ADDR(pgdir[i]));
@@ -471,6 +471,19 @@ void modifyshmem_count(int page_number,int opcode)
       }
   }
 }
+
+/*Function to get the virtual adress of shared page*/
+void * getshmem_addr(int page_number)
+{
+  if(0 <= page_number && page_number < SHARED_PAGE_NUM)
+  {
+     if(ShmemInfo[page_number].shmem_vaddr)
+      return ShmemInfo[page_number].shmem_vaddr;
+  }
+
+  return 0;
+}
+
 
 //PAGEBREAK!
 // Blank page.

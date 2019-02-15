@@ -192,6 +192,7 @@ void* 			shmem_access(int);
 int 			shmem_count(int);
 void 			modifyshmem_count(int page_number,int opcode);
 int 			mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
+void* 			getshmem_addr(int page_number);
 
 
 // number of elements in fixed-size array
