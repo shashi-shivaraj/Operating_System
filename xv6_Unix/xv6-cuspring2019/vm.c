@@ -457,7 +457,6 @@ int shmem_count(int page_number)
 /*Function to increment/decrement the shmem_count*/
 void modifyshmem_count(int page_number,int opcode)
 {
-
   if(0 <= page_number && page_number < SHARED_PAGE_NUM)
   {
       if(0 == opcode && ShmemInfo[page_number].count)
