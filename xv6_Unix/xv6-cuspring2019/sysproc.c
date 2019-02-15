@@ -108,16 +108,16 @@ int sys_shmem_access(void)
     int shmem_pgnum = 0;
 
     if(argint(0, &shmem_pgnum) < 0)
-      return -1;
+      return 0; //returns nullprt
 
     /*cprintf("shmem_pgnum = %d\n",shmem_pgnum);*/
 
-    if(!(0 <= shmem_pgnum && shmem_pgnum < SHARED_PAGE_NUM)) //page number should be in the range [0,3]
+    if(!(0 <= shmem_pgnum && shmem_pgnum < SHARED_PAGE_NUM)) //page number should be in the range [0,SHARED_PAGE_NUM]
     {
-      return -1;
+      return 0; //returns nullptr
     }
-    
-    return 0;
+
+    return shmem_access(shmem_pgnum);
 }
 
 
@@ -130,7 +130,7 @@ int sys_shmem_count(void)
 
     /*cprintf("shmem_pgnum = %d\n",shmem_pgnum);*/
 
-    if(!(0 <= shmem_pgnum && shmem_pgnum < SHARED_PAGE_NUM)) //page number should be in the range [0,3]
+    if(!(0 <= shmem_pgnum && shmem_pgnum < SHARED_PAGE_NUM)) //page number should be in the range [0,SHARED_PAGE_NUM]
     {
       return -1;
     }

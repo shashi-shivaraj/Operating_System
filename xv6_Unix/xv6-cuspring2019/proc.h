@@ -45,6 +45,7 @@ struct proc {
   struct trapframe *tf;        // Trap frame for current syscall
   struct context *context;     // swtch() here to run process
   void *chan;                  // If non-zero, sleeping on chan
+  void *shmem_vaddr[SHARED_PAGE_NUM];// Array of pointers to store virtual address of shared memory
   int killed;                  // If non-zero, have been killed
   struct file *ofile[NOFILE];  // Open files
   struct inode *cwd;           // Current directory

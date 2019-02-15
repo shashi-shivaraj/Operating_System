@@ -412,6 +412,22 @@ int shmem_init()
 }
 
 
+/*Function to map a physical page into the virtual address space of the caller,
+starting at the very high end of the address space. 
+The Function then returns the virtual address of that page to the caller, so it can read/write it.
+Returns 0 on error*/
+int shmem_access(int page_number)
+{
+  
+  if(!(0 <= page_number && page_number < SHARED_PAGE_NUM))
+  {
+      return 0; //return nullptr 
+  }
+
+  return 0;
+}
+
+
 /*Function to get the total number of processes 
  which currently are sharing a page as shared memory
  Returns -1 on error */
@@ -422,7 +438,7 @@ int shmem_count(int page_number)
   {
       return ShmemInfo[page_number].count; 
   }
-  
+
   return -1;
 }
 
