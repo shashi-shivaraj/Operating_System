@@ -60,7 +60,7 @@ walkpgdir(pde_t *pgdir, const void *va, int alloc)
 // Create PTEs for virtual addresses starting at va that refer to
 // physical addresses starting at pa. va and size might not
 // be page-aligned.
-static int
+int
 mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm)
 {
   char *a, *last;
@@ -416,15 +416,27 @@ int shmem_init()
 starting at the very high end of the address space. 
 The Function then returns the virtual address of that page to the caller, so it can read/write it.
 Returns 0 on error*/
-int shmem_access(int page_number)
+void* shmem_access(int page_number)
 {
   
-  if(!(0 <= page_number && page_number < SHARED_PAGE_NUM))
+  struct proc *Proc = 0; 
+
+  if(!(0 <= page_number && page_number < SHARED_PAGE_NUM)) /*check if its a valid page number*/
   {
       return 0; //return nullptr 
   }
 
-  return 0;
+  Proc = myproc();
+
+  if(!Proc->shmem_vaddr[page_number]) /*process doesnot have access to the page*/
+  {
+     /*create PTEs */
+     mappages(Proc->pgdir, (void*)(KERNBASE-PGSIZE*(page_number+1)), PGSIZE, V2P(ShmemInfo[page_number].shmem_vaddr), PTE_W|PTE_U);
+     Proc->shmem_vaddr[page_number] = (void*)(KERNBASE-PGSIZE*(page_number+1));
+     ShmemInfo[page_number].count ++; /*increment the count*/
+  }
+
+  return Proc->shmem_vaddr[page_number];
 }
 
 
@@ -440,6 +452,25 @@ int shmem_count(int page_number)
   }
 
   return -1;
+}
+
+/*Function to increment/decrement the shmem_count*/
+void modifyshmem_count(int page_number,int opcode)
+{
+
+  if(0 <= page_number && page_number < SHARED_PAGE_NUM)
+  {
+      if(0 == opcode && ShmemInfo[page_number].count)
+      {
+        ShmemInfo[page_number].count --;
+        //cprintf("count decremented");
+      }
+      else if (1 == opcode)
+      {
+        ShmemInfo[page_number].count ++; 
+        //cprintf("count incremented");
+      }
+  }
 }
 
 //PAGEBREAK!

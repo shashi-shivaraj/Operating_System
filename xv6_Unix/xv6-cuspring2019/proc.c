@@ -197,6 +197,19 @@ fork(void)
     np->state = UNUSED;
     return -1;
   }
+
+  // copy the shared memory pages to child
+  for(int i = 0;i < SHARED_PAGE_NUM;i++)
+  {
+    if(curproc->shmem_vaddr[i])
+    {
+      np->shmem_vaddr[i] = curproc->shmem_vaddr[i];
+      mappages(np->pgdir, (void*)(KERNBASE-PGSIZE*(i+1)), PGSIZE, V2P(np[i].shmem_vaddr), PTE_W|PTE_U);
+      /*increment the shared memory process count*/
+      modifyshmem_count(i,1);
+    }
+  }
+
   np->sz = curproc->sz;
   np->parent = curproc;
   *np->tf = *curproc->tf;
@@ -290,6 +303,18 @@ wait(void)
         pid = p->pid;
         kfree(p->kstack);
         p->kstack = 0;
+
+        //check if child is having access to shared memory
+        for(int i = 0;i < SHARED_PAGE_NUM;i++)
+        {
+          if(p->shmem_vaddr[i])
+          {
+            p->shmem_vaddr[i] = 0;
+            /*decrement the shared memory process count*/
+            modifyshmem_count(i,0);
+          }
+        }
+        
         freevm(p->pgdir);
         p->pid = 0;
         p->parent = 0;

@@ -117,7 +117,7 @@ int sys_shmem_access(void)
       return 0; //returns nullptr
     }
 
-    return shmem_access(shmem_pgnum);
+    return (int)shmem_access(shmem_pgnum);
 }
 
 

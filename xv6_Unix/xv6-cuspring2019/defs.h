@@ -188,8 +188,10 @@ void            switchkvm(void);
 int             copyout(pde_t*, uint, void*, uint);
 void            clearpteu(pde_t *pgdir, char *uva);
 int 			shmem_init();
-int 			shmem_access(int);
+void* 			shmem_access(int);
 int 			shmem_count(int);
+void 			modifyshmem_count(int page_number,int opcode);
+int 			mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
 
 
 // number of elements in fixed-size array

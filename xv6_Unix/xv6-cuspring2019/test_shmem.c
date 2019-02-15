@@ -21,8 +21,8 @@ int stdout = 1;
 int main(int argc,char *argv[])
 {
 		
-	printf(stdout," shmem_access returned = %d\n",shmem_access(2));
-	printf(stdout," shmem_count returned = %d\n",shmem_count(-2));
+	printf(stdout," shmem_access returned = 0x%x\n",shmem_access(2));
+	printf(stdout," shmem_count returned = %d\n",shmem_count(2));
 
 	exit();
 }
