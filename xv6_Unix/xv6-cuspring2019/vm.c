@@ -389,7 +389,7 @@ copyout(pde_t *pgdir, uint va, void *p, uint len)
   return 0;
 }
 
-/*Function to initialize shared memory pages.
+/*Function to create shared memory pages.
 Returns -1 on error */
 int shmem_init()
 {

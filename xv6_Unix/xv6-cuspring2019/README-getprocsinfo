@@ -8,6 +8,7 @@ process name for each of the processes that exists in the system at the time of 
 
 Build Instructions:
 Open a terminal and set the path to the project directory.
+Use the commands: $ chmod -R 777 shonnah
 Use the commands: $ make clean;
 				  $ make qemu;
 This will build the xv6 kernel and the executable "testgetprocsinfo" to 

@@ -6,34 +6,92 @@ Description :
 Part A - Null-pointer Dereference:
 Implemented code to cause an exception when a program dereferences a null pointer.
 
+Part B - Shared Pages:
+Implemented code to add shared-memory pages for processes to communicate through memory.
+
 Build Instructions:
 Open a terminal and set the path to the project directory.
+Use the commands: $ chmod -R 777 shonnah
 Use the commands: $ make clean;
 				  $ make qemu;
-This will build the xv6 kernel and the executable "test_nullptr" to 
-test the null pointer dereference behaviour.
+This will build the xv6 kernel and the executables "test_nullptr" to 
+test the null pointer dereference behaviour and "test_shmem" to test 
+shared-memory pages.
+
 Execute "test_nullptr" from the command line:
 $ test_nullptr
+Execute "test_shmem" from the command line:
+$ test_shmem
 
 Implementation details of Part A - Null-pointer Dereference:
 
 1)Makefile
 Updated the makefile to set the user programs entry point to 0x1000.
+
 @line 149
 $(LD) $(LDFLAGS) -N -e main -Ttext 0x1000 -o $@ $^ #set entry point of user programs to 0x1000 = PGSIZE = 4096
 @line 156
 $(LD) $(LDFLAGS) -N -e main -Ttext 0x1000 -o _forktest forktest.o ulib.o usys.o #set entry point of user programs to 0x1000 = PGSIZE = 4096
 
 2)Modify exec()function of exec.c to load the program by excluding PAGE0
+
 @line 41 
 // Load program into memory exclude the first page.
 sz = PGSIZE - 1;
 
 3)Modify copyuvm()function of exec.c to exclude the first page.
+
 @line 325
 //exclude first page 
   for(i = PGSIZE; i < sz; i += PGSIZE)
 
 4)Added nullptr check to function argptr()
+
 @line 66
 if(size < 0 || (uint)i >= curproc->sz || (uint)i+size > curproc->sz || (uint)i == 0) //check added to protect nullptr dereference 
+
+5)Implemented the test program test_nullptr.c
+
+
+Implementation details of Part B - Shared Pages:
+
+1)Defined the total number of shared memory pages and declared a structure to store the info of shared memory pages in the header file mmu.h
+
+@line 24
+// Total number of shared memory pages
+#define SHARED_PAGE_NUM  4
+
+@line 31
+struct shmeminfo{}
+
+2)Implemented a function shmem_init() to allocate the required 4 shared memory pages and stored their info in
+a global array of struct shmeminfo in vm.c;It is called from the main() function of file main.c.
+Code changes were required in the file : vm.c,main.c,defs.h,,
+
+@line 392
+*Function to create shared memory pages.
+Returns -1 on error */
+int shmem_init()
+
+3)Implemented the two specified syscalls shmem_access() and shmem_count() with syscall numbers 23 and 24 respectively.The implementation was done in vm.c;In shmem_access(),used mappages() to create the necessary page table entries for the process.
+Code changes were required in the file : vm.c.syscall.c,syscall.h,sysproc.c,user.h,usys.S,
+
+@line 24 of syscall.h
+#define SYS_shmem_access 23
+#define SYS_shmem_count	 24
+
+4)Modified allocuvm() and freevm() in vm.c to prevent them form acessing the 4 shared memory pages.
+
+@line 230
+if(newsz >= KERNBASE - SHARED_PAGE_NUM * PGSIZE) /*Modified to prevent allocation from shared pages*/
+
+@line 293
+ deallocuvm(pgdir, KERNBASE - SHARED_PAGE_NUM * PGSIZE, 0); //modified to prevent freeing of shared memory
+
+
+5)Modified fork() in proc.c to provide the access of shared memory pages to the child process similar to the parent process and incremented the processes reference count in shmeminfo using a helper function modifyshmem_count() implemented in vm.c;Used mappages() to create the necessary page table entries for the child process with use the helper function getshmem_addr().
+Also modified wait() in proc.c to check if the child process has shared memory acccess and decremented the 
+processes reference count in shmeminfo using the helper function modifyshmem_count(). 
+
+
+6)Implemented the test program test_shmem.c which uses fork() to test the implemented syscalls using different processes.
