@@ -102,6 +102,18 @@ exec(char *path, char **argv)
   curproc->tf->esp = sp;
   switchuvm(curproc);
   freevm(oldpgdir);
+
+  // copy the shared memory pages to new exec process
+  for(int i = 0;i < SHARED_PAGE_NUM;i++)
+  {
+    if(curproc->shmem_vaddr[i])
+    {
+      mappages(curproc->pgdir, (void*)(KERNBASE-PGSIZE*(i+1)), PGSIZE, V2P(getshmem_addr(i)), PTE_W|PTE_U);
+      /*increment the shared memory process count*/
+      modifyshmem_count(i,1);
+    }
+  }
+
   return 0;
 
  bad:
