@@ -89,9 +89,11 @@ if(newsz >= KERNBASE - SHARED_PAGE_NUM * PGSIZE) /*Modified to prevent allocatio
  deallocuvm(pgdir, KERNBASE - SHARED_PAGE_NUM * PGSIZE, 0); //modified to prevent freeing of shared memory
 
 
-5)Modified fork() in proc.c to provide the access of shared memory pages to the child process similar to the parent process and incremented the processes reference count in shmeminfo using a helper function modifyshmem_count() implemented in vm.c;Used mappages() to create the necessary page table entries for the child process with use the helper function getshmem_addr().
+5)Modified fork() in proc.c to provide the access of shared memory pages to the child process similar to the parent process 
+and incremented the processes reference count in shmeminfo using a helper function modifyshmem_count() implemented in vm.c;Used mappages() to create the necessary page table entries for the child process with use the helper function getshmem_addr().
 Also modified wait() in proc.c to check if the child process has shared memory acccess and decremented the 
 processes reference count in shmeminfo using the helper function modifyshmem_count(). 
 
+6)Modified exec() in exec.c to provide the access of shared memory pages to the new process.
 
-6)Implemented the test program test_shmem.c which uses fork() to test the implemented syscalls using different processes.
+7)Implemented the test program test_shmem.c which uses fork() to test the implemented syscalls using different processes.

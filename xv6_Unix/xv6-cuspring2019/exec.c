@@ -110,7 +110,7 @@ exec(char *path, char **argv)
     {
       mappages(curproc->pgdir, (void*)(KERNBASE-PGSIZE*(i+1)), PGSIZE, V2P(getshmem_addr(i)), PTE_W|PTE_U);
       /*increment the shared memory process count*/
-      modifyshmem_count(i,1);
+      //modifyshmem_count(i,1); //not required because it replaces the current process
     }
   }
 
