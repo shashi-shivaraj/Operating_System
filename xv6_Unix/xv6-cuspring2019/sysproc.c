@@ -137,3 +137,15 @@ int sys_shmem_count(void)
 
     return shmem_count(shmem_pgnum);
 }
+
+int sys_clone(void)
+{
+  //cprintf("sys_clone called\n");
+  return 27;
+}
+
+int sys_join(void)
+{
+  //cprintf("sys_join called\n");
+  return 27;
+}

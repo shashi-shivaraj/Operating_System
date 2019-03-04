@@ -185,6 +185,7 @@ UPROGS=\
 	_wc\
 	_elite\
 	_shmem_test\
+	_test_threads\
 	_zombie\
 	$(CL_UPROGS)\
 
@@ -223,9 +224,9 @@ QEMUGDB = $(shell if $(QEMU) -help | grep -q '^-gdb'; \
 	then echo "-gdb tcp::$(GDBPORT)"; \
 	else echo "-s -p $(GDBPORT)"; fi)
 ifndef CPUS
-CPUS := 2
+CPUS := 4
 endif
-QEMUOPTS = -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
+QEMUOPTS = --enable-kvm -drive file=fs.img,index=1,media=disk,format=raw -drive file=xv6.img,index=0,media=disk,format=raw -smp $(CPUS) -m 512 $(QEMUEXTRA)
 
 qemu: fs.img xv6.img
 	$(QEMU) -serial mon:stdio $(QEMUOPTS)
@@ -256,7 +257,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c testgetprocs.c test_nullptr.c\
-	test_shmem.c printf.c umalloc.c elite.c shmem_test.c\
+	test_shmem.c printf.c umalloc.c elite.c shmem_test.c test_threads.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 	$(CL_EXTRA)\
