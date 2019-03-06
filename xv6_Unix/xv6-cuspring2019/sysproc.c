@@ -140,12 +140,32 @@ int sys_shmem_count(void)
 
 int sys_clone(void)
 {
+  void *fcn = 0,*arg = 0,*stack = 0;
+
   //cprintf("sys_clone called\n");
-  return 27;
+
+  if(argptr(0, (void*)&fcn, sizeof(void*)) < 0 || argptr(1, (void*)&arg, sizeof(void*)) < 0 || 
+     argptr(2, (void*)&stack, sizeof(void*)) < 0)
+    return -1;
+
+  /*stack should be one page in size and page-aligned*/
+  if((uint)stack % PGSIZE) 
+    return -1;
+
+  if((uint)stack + PGSIZE > myproc()->sz) 
+    return -1;
+
+  return clone(fcn,arg,stack);
 }
 
 int sys_join(void)
 {
+  int pid;
+
   //cprintf("sys_join called\n");
-  return 27;
+
+  if(argint(0, &pid) < 0)
+    return -1;
+
+  return join(pid);
 }

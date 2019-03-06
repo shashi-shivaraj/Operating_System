@@ -1,6 +1,8 @@
 struct stat;
 struct rtcdate;
 struct ProcsInfo;
+struct kthread_t;
+struct lock_t;
 
 // system calls
 int fork(void);
@@ -27,8 +29,8 @@ int uptime(void);
 int getprocsinfo(struct ProcsInfo*);
 void *shmem_access(int page_number);
 int shmem_count(int page_number);
-int clone();
-int join();
+int clone(void(*fcn)(void*), void *arg, void*stack);
+int join(int pid);
 
 // ulib.c
 int stat(const char*, struct stat*);
@@ -43,3 +45,10 @@ void* memset(void*, int, uint);
 void* malloc(uint);
 void free(void*);
 int atoi(const char*);
+
+// kthread.c
+struct kthread_t thread_create(void (*)(void*), void* );
+int thread_join(struct kthread_t);
+void init_lock(struct lock_t* );
+void lock_acquire(struct lock_t* );
+void lock_release(struct lock_t* );

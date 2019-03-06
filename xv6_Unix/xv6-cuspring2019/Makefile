@@ -143,7 +143,7 @@ tags: $(OBJS) entryother.S _init
 vectors.S: vectors.pl
 	./vectors.pl > vectors.S
 
-ULIB = ulib.o usys.o printf.o umalloc.o
+ULIB = ulib.o usys.o printf.o umalloc.o kthread.o
 
 _%: %.o $(ULIB)
 	$(LD) $(LDFLAGS) -N -e main -Ttext 0x1000 -o $@ $^ #set entry point of user programs to 0x1000 = PGSIZE = 4096
@@ -257,7 +257,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c testgetprocs.c test_nullptr.c\
-	test_shmem.c printf.c umalloc.c elite.c shmem_test.c test_threads.c\
+	test_shmem.c printf.c umalloc.c elite.c shmem_test.c test_threads.c kthread.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 	$(CL_EXTRA)\

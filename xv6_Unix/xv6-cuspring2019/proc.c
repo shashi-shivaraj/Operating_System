@@ -590,3 +590,17 @@ int getprocsinfo(struct ProcsInfo *procsinfo)
 	
 	return proc_count; /*return number of processes in use*/
 }
+
+/*Function to create a new kernel thread
+which shares the calling process's address space*/
+int clone(void(*fcn)(void*), void *arg, void*stack)
+{
+  return 0;
+}
+
+/*call joins with the child thread specified by the pid
+ if it is a child of the calling process.*/
+int join(int pid)
+{
+  return 0;
+}

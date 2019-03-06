@@ -122,6 +122,8 @@ int             wait(void);
 void            wakeup(void*);
 void            yield(void);
 int 			getprocsinfo(struct ProcsInfo*);
+int 			clone(void(*fcn)(void*), void *arg, void*stack);
+int 			join(int pid);
 
 // swtch.S
 void            swtch(struct context**, struct context*);
@@ -193,7 +195,6 @@ int 			shmem_count(int);
 void 			modifyshmem_count(int page_number,int opcode);
 int 			mappages(pde_t *pgdir, void *va, uint size, uint pa, int perm);
 void* 			getshmem_addr(int page_number);
-
 
 // number of elements in fixed-size array
 #define NELEM(x) (sizeof(x)/sizeof((x)[0]))
