@@ -185,7 +185,6 @@ UPROGS=\
 	_wc\
 	_elite\
 	_shmem_test\
-	_test_threads\
 	_zombie\
 	$(CL_UPROGS)\
 
@@ -257,7 +256,7 @@ qemu-nox-gdb: fs.img xv6.img .gdbinit
 EXTRA=\
 	mkfs.c ulib.c user.h cat.c echo.c forktest.c grep.c kill.c\
 	ln.c ls.c mkdir.c rm.c stressfs.c usertests.c wc.c zombie.c testgetprocs.c test_nullptr.c\
-	test_shmem.c printf.c umalloc.c elite.c shmem_test.c test_threads.c kthread.c\
+	test_shmem.c printf.c umalloc.c elite.c shmem_test.c kthread.c\
 	README dot-bochsrc *.pl toc.* runoff runoff1 runoff.list\
 	.gdbinit.tmpl gdbutil\
 	$(CL_EXTRA)\
