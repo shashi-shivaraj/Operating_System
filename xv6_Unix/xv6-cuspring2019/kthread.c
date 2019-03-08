@@ -27,11 +27,13 @@ struct kthread_t thread_create(void (*start_routine)(void*), void* arg)
         pgalined_stack = stack;
     }
 
-    lock_release(&lock);
+  
 
     pid = clone(start_routine, arg, pgalined_stack);
     k.pid = pid;
     k.stack = (void*)stack;
+
+    lock_release(&lock);
    
     return k;
 }
@@ -39,21 +41,23 @@ struct kthread_t thread_create(void (*start_routine)(void*), void* arg)
 int thread_join(struct kthread_t k)
 {
     int ret = 0;
+    struct lock_t lock;
+    init_lock(&lock);
+    lock_acquire(&lock);
     ret = join(k.pid);
     if(ret != 0)
     {
-        return ret; //failure in join   
+        //return ret; //failure in join   
+        //fall through
     }
     else
-    {
-         struct lock_t lock;
-         init_lock(&lock);
-         lock_acquire(&lock);
-            free(k.stack); 
-         lock_release(&lock);
+    { 
+         free(k.stack); 
     }
+
+    lock_release(&lock);
   
-    return 0;
+    return ret;
 }
 
 void init_lock( struct lock_t *lock)
