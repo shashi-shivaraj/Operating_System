@@ -1,18 +1,66 @@
 Name: Shashi Shivaraju
 email: shonnah@g.clemson.edu
 XID : C88650674
+Note on Project 2: Code changes to handle exec() test case implemented.
 
 Description :
-
+Implement code to add kernel threads to xv6 and to build a thread library.
 
 Build Instructions:
 Open a terminal and set the path to the project directory.
+Execute in super user mode (required due to QEMUOPTS = --enable-kvm in Makefile) 
 Use the commands: $ chmod -R 777 shonnah
+				  $ sudo su
 Use the commands: $ make clean;
 				  $ make qemu;
-This will build the xv6 kernel and the executable "" to 
+This will build the xv6 kernel and the executables "simple_threads" and "prod_cons" to 
 test  in qemu emulator with xv6.
-Execute "" from the command line:
-$ 
+Execute "simple_threads" and "prod_cons" from the command line:
+$ simple_threads
+$ prod_cons
 
 Implementation Details:
+
+1)Implemented the two specified syscalls clone() and join() with syscall numbers 25 and 26 respectively.
+The implementation was done in proc.c;
+Code changes were required in the file : proc.c.syscall.c,syscall.h,sysproc.c,user.h,usys.S,
+
+@line 26 of syscall.h
+#define SYS_clone  25
+#define SYS_join   26
+
+2)Implementation of clone() system call [int clone(void(*fcn)(void*), void *arg, void*stack)]:
+Modified the fork() code to implement clone() function to create a thread process.
+To identify it as an thread process,a variable is added in struct proc;
+[code]:
+struct proc {...
+  uint isThreadProc;           // Determines if the process is a thread or not
+};
+
+The register eip is set to fcn function pointer,so that new thread starts executing at the
+address specified by fcn.
+[code]:
+np->tf->eip = (uint)fcn;
+
+The register esp points to the top of the stack and at top of the stack,the fake return PC (0xffffffff) and input argument arg is stored.
+[code]:
+*(uint*)(stack + PGSIZE - sizeof(uint*)) = (uint)arg; 
+*(uint*)(stack + PGSIZE - 2*sizeof(uint*)) = 0xffffffff;
+np->tf->esp = (uint)(stack + PGSIZE - 2*sizeof(uint*));
+ 
+3)Implementation of join() system call [int join(int pid)]:
+Modified the wait() code to implement join() function to handle just the thread process.
+
+4)Modified wait(),exit() and growproc() to handle thread process.
+
+5)Implementation of the user thread library:
+Implemented pthread_create() API to create a new thread using the clone() system call.
+Passing page alinged stack of size PAGE as one of the input args.
+
+Implemented pthread_create() API to join a thread  specified by its id using the join() system call.
+
+Used atomic xchg() and barrier __sync_synchronize() calls to implement lock_acquire() and lock_release() API's
+
+6)Testing
+Used the test programs "simple_threads" and "prod_cons.c" to test the thread library.
+The above provided programs haven't been modified,so testing performed is very limited.
