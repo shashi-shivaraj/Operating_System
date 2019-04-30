@@ -1,0 +1,71 @@
+Name: Shashi Shivaraju
+email: shonnah@g.clemson.edu
+XID : C88650674
+
+Description :
+a)Implement a priority-based scheduler for xv6 
+b)Implement a checksum based file system integrity feature for xv6.
+c)Implement a file system checker for xv6 file system image on Linux.
+
+Build Instructions:
+a),b): Open a terminal and set the path to the project directory "xv6-cuspring2019".
+Use the commands: $ make clean;
+				  $ make qemu;
+This will build the xv6 kernel and the executables "testpriority" and "filestat" to 
+test  in qemu emulator with xv6.
+Execute "testpriority" and "filestat" from the command line:
+$ testpriority
+$ filestat "filename"
+
+c): Open a terminal and set the path to the project directory "linux/FileSystem_Checker"
+Use the makefile with the commands: $ make clean;make
+This will build the executables "fscheck".
+Execute "fscheck" from the command line:
+$ fscheck "filename"
+
+Implementation Details:
+
+a)Priority-Based Scheduler
+
+1)Implemented the two specified syscalls getpinfo() and setpri() with syscall numbers 22 and 23 respectively.
+The implementation was done in proc.c;
+Code changes were required in the file : proc.c.syscall.c,syscall.h,sysproc.c,user.h,usys.S;
+
+#define SYS_getpinfo 22
+#define SYS_setpri 23
+
+2)In proc.c,modified the function scheduler() such that the scheduler first runs
+the process that has the high priority.If not then the scheduler uses round-robin.
+
+3)Testing
+Used the test program "testpriority" to test the Priority-Based Scheduler.
+
+b)Checksum Based File System Integrity to add protection from data corruption.
+
+1)Added code to support a new type of file which keeps a checksum for every block(O_CHECKED).
+The address in inodes are modified to use the first byte to represent the checksum 
+and last three byte to represent the address.
+
+2)In the file fs.c ,modified writi() function to calculate the checksum and update it into address of inode.
+Modified readi() function to calculate checksum and compare it with the stored checksum saved in address of inode.
+Modified the stucture stat and function stati() to obtain one byte checksum value of the file.
+
+Code changes were required in the file :fs.c,stat.h,sysfile.c,fcntl.h,;
+
+3)Testing
+Use the test program "filestat" to test the Checksum Based File System Integrity.
+It creates  file,writes data to the file,reads data from the file and prints the file stats.
+
+c)xv6 File System Checker
+
+I was not able to complete this implementation.
+The excecutable only checks for the below 4 errors currently:
+	1) Each inode is either unallocated or one of the valid types (T_FILE,T_DIR, T_DEV). ERROR: bad inode.
+	2) For in-use inodes, each address that is used by inode is valid. ERROR: bad address in inode.
+	3) Root directory exists, and it is inode number 1. ERROR MESSAGE:root directory does not exist.
+	4) Each directory contains . and .. entries. ERROR: directory not properly formatted.
+
+The x86 file system image is opened and its stucture is as below:
+boot block | superblock | log | inode blocks | free bitmap | data block
+
+Please refer the file "fscheck.c" for the partial implementation of the checker.
