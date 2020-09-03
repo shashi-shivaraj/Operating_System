@@ -55,5 +55,8 @@ int main()
 	close(fd_read);
 	close(fd_write);
 
+	fclose(fp_read);
+	fclose(fp_write);
+
 	return 0;
 }
